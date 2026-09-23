@@ -47,6 +47,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onOpenBooking })
   const handleReset = () => {
     setSubmitted(false);
     setSubmittedHtml('');
+    setIsRedirecting(false);
     setFormData({
       name: '',
       email: '',

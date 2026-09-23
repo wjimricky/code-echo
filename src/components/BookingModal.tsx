@@ -76,6 +76,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
 
   const handleReset = () => {
     setStep('slot');
+    setIsRedirecting(false);
     onClose();
   };
 

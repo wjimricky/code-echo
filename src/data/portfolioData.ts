@@ -35,7 +35,7 @@ export const portfolioProfile = {
   },
   links: {
     linkedin: "https://www.linkedin.com/in/candya-randriamanarina-5439a2285",
-    calendly: "https://calendly.com/rancandya/appel-decouverte-candya?month=2026-09",
+    calendly: "https://calendly.com/rancandya/appel-decouverte-candya",
     email: "rancandya@gmail.com",
   },
   schedule: {
