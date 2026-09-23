@@ -7,6 +7,7 @@ import suiviTachesVue2 from '../assets/projects/suivi-taches-vue-2.png.asset.jso
 import suiviTachesVue3 from '../assets/projects/suivi-taches-vue-3.jpg.asset.json';
 import boiteMailVue1 from '../assets/projects/boite-mail-vue-1.jpg.asset.json';
 import exempleEmailVue2 from '../assets/projects/exemple-email-vue-2.png.asset.json';
+import exempleEmailVue3 from '../assets/projects/exemple-email-vue-3.png.asset.json';
 import suiviPaiementVue1 from '../assets/projects/suivi-paiement-vue-1.png.asset.json';
 import suiviPaiementVue2 from '../assets/projects/suivi-paiement-vue-2.png.asset.json';
 
@@ -305,6 +306,13 @@ export const projectsData: Project[] = [
         subtitle: "Réponse empathique, claire et rassurante envoyée en moins de 24h",
         type: "email",
         imageUrl: exempleEmailVue2.url
+      },
+      {
+        id: "es-3",
+        title: "Vue 3 — Exemple d'email de reprise d'accès",
+        subtitle: "Réponse claire, rassurante et personnalisée pour accompagner un apprenant",
+        type: "email",
+        imageUrl: exempleEmailVue3.url
       }
     ]
   },

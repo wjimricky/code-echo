@@ -7,11 +7,14 @@ import {
   X,
   Sparkles,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   FileText,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ProjectScreenMockup } from './ProjectScreenMockup';
 import { useScrollLock } from '../../hooks/use-scroll-lock';
+import { Button } from '../ui/button';
 
 interface ProjectsSectionProps {
   onOpenBooking?: (plan?: string) => void;
@@ -29,6 +32,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
   const selectorRef = useRef<HTMLDivElement>(null);
   const [selectorOverflows, setSelectorOverflows] = useState(false);
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const [zoomedScreenshot, setZoomedScreenshot] = useState<{
     project: Project;
     screenshot: Screenshot;
@@ -66,6 +70,27 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
     }));
   };
 
+  const selectAdjacentProject = (direction: -1 | 1) => {
+    const currentIndex = projectsData.findIndex((project) => project.id === currentProject.id);
+    const nextIndex = (currentIndex + direction + projectsData.length) % projectsData.length;
+    const nextProject = projectsData[nextIndex];
+    if (nextProject) setActiveProjectId(nextProject.id);
+  };
+
+  const selectAdjacentView = (direction: -1 | 1, inModal = false) => {
+    const project = inModal && zoomedScreenshot ? zoomedScreenshot.project : currentProject;
+    const activeId = inModal && zoomedScreenshot ? zoomedScreenshot.screenshot.id : currentScreenshot.id;
+    const currentIndex = project.screenshots.findIndex((screenshot) => screenshot.id === activeId);
+    const nextIndex = (currentIndex + direction + project.screenshots.length) % project.screenshots.length;
+    const nextScreenshot = project.screenshots[nextIndex];
+    if (!nextScreenshot) return;
+    if (inModal) {
+      setZoomedScreenshot({ project, screenshot: nextScreenshot });
+    } else {
+      handleSelectView(project.id, nextScreenshot.id);
+    }
+  };
+
   return (
     <section id="projets" className="py-14 sm:py-20 md:py-28 bg-[#F7F3EB]/70 border-t border-[#EAE3D8] scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -84,7 +109,11 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
         </div>
 
         {/* Project Selector Tabs */}
-        <div ref={selectorRef} className="-mx-4 flex snap-x items-center justify-start overflow-x-auto px-4 pb-4 gap-2.5 sm:mx-0 sm:justify-center sm:px-0 sm:gap-3 scrollbar-none">
+        <div className="relative flex items-center gap-2">
+          <Button type="button" variant="outline" size="icon" onClick={() => selectAdjacentProject(-1)} aria-label="Projet précédent" className="shrink-0 rounded-full border-[#DED3C5] bg-white text-[#4A3F35] shadow-sm hover:bg-[#F3EDE4]">
+            <ChevronLeft />
+          </Button>
+          <div ref={selectorRef} className="-mx-4 flex flex-1 snap-x items-center justify-start overflow-x-auto px-4 pb-4 gap-2.5 sm:mx-0 sm:justify-center sm:px-0 sm:gap-3 scrollbar-none">
           {projectsData.map((project) => {
             const isSelected = project.id === activeProjectId;
             return (
@@ -107,6 +136,10 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
               </button>
             );
           })}
+          </div>
+          <Button type="button" variant="outline" size="icon" onClick={() => selectAdjacentProject(1)} aria-label="Projet suivant" className="shrink-0 rounded-full border-[#DED3C5] bg-white text-[#4A3F35] shadow-sm hover:bg-[#F3EDE4]">
+            <ChevronRight />
+          </Button>
         </div>
         <div className="mb-7 min-h-4 sm:mb-10 sm:min-h-0">
           {selectorOverflows && (
@@ -172,18 +205,9 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
 
           {/* Interactive Screen Viewer (Window style) */}
           <div className="p-2.5 sm:p-6 lg:p-8 bg-[#F9F7F3]/50">
-            <div className="rounded-2xl border border-[#E2DAD0] bg-white shadow-sm overflow-hidden">
+            <div className="overflow-hidden rounded-2xl border border-[#DED4C8] bg-white shadow-[0_18px_50px_rgba(68,52,38,0.09)]">
               {/* Window Title Bar */}
-              <div className="px-3 sm:px-4 py-3 bg-[#FAF7F2] border-b border-[#EAE3D8] grid grid-cols-1 gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
-                {/* Traffic lights & title */}
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-full bg-[#FF5F56] inline-block" />
-                    <span className="w-3 h-3 rounded-full bg-[#FFBD2E] inline-block" />
-                    <span className="w-3 h-3 rounded-full bg-[#27C93F] inline-block" />
-                  </div>
-                </div>
-
+              <div className="flex items-center justify-center border-b border-[#EAE3D8] bg-[#F4EFE8] px-3 py-3 sm:justify-end sm:px-4">
                 {/* Switcher for Views */}
                 <div className="flex max-w-full items-center gap-1.5 overflow-x-auto pb-0.5">
                   {currentProject.screenshots.map((sc, index) => {
@@ -217,15 +241,27 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
               </div>
 
               {/* Window Body: Images de l'aperçu */}
-              <div className="p-1.5 sm:p-4 bg-[#0F1115] overflow-auto flex items-center justify-center min-h-[240px] sm:min-h-[460px] relative group">
+              <div className="group relative flex min-h-[240px] items-center justify-center overflow-hidden bg-[#EDE7DE] p-2 sm:min-h-[460px] sm:p-5">
+                {!loadedImages[currentScreenshot.id] && !imgErrors[currentScreenshot.id] && (
+                  <div className="absolute inset-0 z-10 grid place-items-center bg-[#F2EDE6]" role="status" aria-label="Chargement de l’image">
+                    <div className="relative h-12 w-12">
+                      <span className="absolute inset-0 rounded-full border border-[#D8CABA]" />
+                      <span className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-[#7A583E]" />
+                      <span className="absolute inset-[18px] rounded-full bg-[#A87C51]" />
+                    </div>
+                  </div>
+                )}
                 {!imgErrors[currentScreenshot.id] ? (
                   <img
                     key={currentScreenshot.id}
                     src={currentScreenshot.imageUrl}
                     alt={currentScreenshot.title}
                     referrerPolicy="no-referrer"
-                    className="w-full max-h-[520px] object-contain rounded-lg shadow-2xl transition-all duration-300 group-hover:brightness-[1.03] cursor-pointer"
+                    loading="lazy"
+                    decoding="async"
+                    className={`w-full max-h-[520px] object-contain rounded-lg shadow-[0_20px_45px_rgba(63,49,37,0.16)] transition-all duration-500 cursor-pointer ${loadedImages[currentScreenshot.id] ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.99]'} md:group-hover:brightness-[0.72]`}
                     onClick={() => setZoomedScreenshot({ project: currentProject, screenshot: currentScreenshot })}
+                    onLoad={() => setLoadedImages((prev) => ({ ...prev, [currentScreenshot.id]: true }))}
                     onError={() => {
                       setImgErrors((prev) => ({ ...prev, [currentScreenshot.id]: true }));
                     }}
@@ -235,6 +271,16 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
                     <ProjectScreenMockup screenshotId={currentScreenshot.id} />
                   </div>
                 )}
+                <Button type="button" variant="outline" size="icon" onClick={() => selectAdjacentView(-1)} aria-label="Photo précédente" className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border-white/70 bg-white/90 text-[#3E3228] shadow-lg backdrop-blur-md hover:bg-white sm:left-5">
+                  <ChevronLeft />
+                </Button>
+                <Button type="button" variant="outline" size="icon" onClick={() => selectAdjacentView(1)} aria-label="Photo suivante" className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border-white/70 bg-white/90 text-[#3E3228] shadow-lg backdrop-blur-md hover:bg-white sm:right-5">
+                  <ChevronRight />
+                </Button>
+                <Button type="button" onClick={() => setZoomedScreenshot({ project: currentProject, screenshot: currentScreenshot })} className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 rounded-full bg-[#2D241E] px-4 text-[#FDFBF7] shadow-xl md:bottom-1/2 md:translate-y-1/2 md:opacity-0 md:group-hover:opacity-100" aria-label="Ouvrir l’image en plein écran">
+                  <Maximize2 />
+                  <span className="md:hidden lg:inline">Plein écran</span>
+                </Button>
               </div>
 
               {/* View Caption / Explanation */}
@@ -462,14 +508,22 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
             </div>
 
             {/* Fullscreen Direct Visual Canvas */}
-            <div className="rounded-xl sm:rounded-2xl border border-[#E0D7CC] overflow-auto bg-[#0F1115] p-1.5 sm:p-4 mb-5 sm:mb-6 flex items-center justify-center min-h-[240px] sm:min-h-[500px]">
+            <div className="relative mb-5 flex min-h-[240px] items-center justify-center overflow-auto rounded-xl border border-[#DED4C8] bg-[#EDE7DE] p-2 sm:mb-6 sm:min-h-[500px] sm:rounded-2xl sm:p-5">
+              {!loadedImages[zoomedScreenshot.screenshot.id] && !imgErrors[zoomedScreenshot.screenshot.id] && (
+                <div className="absolute inset-0 z-10 grid place-items-center bg-[#F2EDE6]" role="status" aria-label="Chargement de l’image">
+                  <div className="relative h-12 w-12"><span className="absolute inset-0 rounded-full border border-[#D8CABA]" /><span className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-[#7A583E]" /><span className="absolute inset-[18px] rounded-full bg-[#A87C51]" /></div>
+                </div>
+              )}
               {!imgErrors[zoomedScreenshot.screenshot.id] ? (
                 <img
                   key={zoomedScreenshot.screenshot.id}
                   src={zoomedScreenshot.screenshot.imageUrl}
                   alt={zoomedScreenshot.screenshot.title}
                   referrerPolicy="no-referrer"
-                  className="w-full max-h-[72vh] object-contain rounded-xl shadow-2xl"
+                  loading="eager"
+                  decoding="async"
+                  className={`w-full max-h-[72vh] object-contain rounded-xl shadow-[0_20px_45px_rgba(63,49,37,0.16)] transition-opacity duration-500 ${loadedImages[zoomedScreenshot.screenshot.id] ? 'opacity-100' : 'opacity-0'}`}
+                  onLoad={() => setLoadedImages((prev) => ({ ...prev, [zoomedScreenshot.screenshot.id]: true }))}
                   onError={() => {
                     setImgErrors((prev) => ({ ...prev, [zoomedScreenshot.screenshot.id]: true }));
                   }}
@@ -479,6 +533,8 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
                   <ProjectScreenMockup screenshotId={zoomedScreenshot.screenshot.id} isZoomed={true} />
                 </div>
               )}
+              <Button type="button" variant="outline" size="icon" onClick={() => selectAdjacentView(-1, true)} aria-label="Photo précédente" className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border-white/70 bg-white/90 text-[#3E3228] shadow-lg hover:bg-white sm:left-5"><ChevronLeft /></Button>
+              <Button type="button" variant="outline" size="icon" onClick={() => selectAdjacentView(1, true)} aria-label="Photo suivante" className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border-white/70 bg-white/90 text-[#3E3228] shadow-lg hover:bg-white sm:right-5"><ChevronRight /></Button>
             </div>
 
             {/* Email template specific display if view is email template */}
