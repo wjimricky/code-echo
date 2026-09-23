@@ -45,6 +45,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [note, setNote] = useState('');
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
     if (initialPlan) {
@@ -62,11 +63,20 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
 
   const handleConfirmBooking = (e: React.FormEvent) => {
     e.preventDefault();
-    setStep('success');
+    if (isRedirecting) return;
+    setIsRedirecting(true);
+    const details = [
+      `Formule : ${selectedPlan}`,
+      `Préférence : ${currentDayConfig.label}, ${selectedSlot}`,
+      note.trim(),
+    ].filter(Boolean).join(' — ');
+    const url = getCalendlyUrl(selectedPlan, { name: name.trim(), email: email.trim(), note: details });
+    window.location.assign(url);
   };
 
   const handleReset = () => {
     setStep('slot');
+    setIsRedirecting(false);
     onClose();
   };
 
@@ -356,9 +366,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
                     <button
                       id="booking-submit-btn"
                       type="submit"
-                      className="flex-1 sm:flex-none px-6 py-3 rounded-full bg-[#2D241E] hover:bg-[#3E3228] text-white text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+                       disabled={isRedirecting}
+                       aria-busy={isRedirecting}
+                       className="flex-1 sm:flex-none px-6 py-3 rounded-full bg-[#2D241E] hover:bg-[#3E3228] text-white text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:cursor-wait disabled:opacity-70"
                     >
-                      <span>Confirmer mon appel</span>
+                       <span>{isRedirecting ? 'Ouverture de Calendly…' : 'Continuer sur Calendly'}</span>
                       <CheckCircle2 className="w-4 h-4 text-[#E0A97E]" />
                     </button>
                   </div>

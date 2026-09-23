@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { projectsData } from '../../data/portfolioData';
 import { Project, Screenshot } from '../../portfolio-types';
 import {
@@ -7,10 +7,7 @@ import {
   X,
   Sparkles,
   ChevronDown,
-  Calendar,
   FileText,
-  Image as ImageIcon,
-  Monitor
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ProjectScreenMockup } from './ProjectScreenMockup';
@@ -29,12 +26,32 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
     'suivi-paiements': 'sp-1',
   });
   const [isDetailsOpen, setIsDetailsOpen] = useState<boolean>(false);
+  const selectorRef = useRef<HTMLDivElement>(null);
+  const [selectorOverflows, setSelectorOverflows] = useState(false);
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
   const [zoomedScreenshot, setZoomedScreenshot] = useState<{
     project: Project;
     screenshot: Screenshot;
   } | null>(null);
   useScrollLock(Boolean(zoomedScreenshot));
+
+  useEffect(() => {
+    const selector = selectorRef.current;
+    if (!selector) return;
+
+    const updateOverflow = () => {
+      setSelectorOverflows(selector.scrollWidth > selector.clientWidth + 1);
+    };
+
+    updateOverflow();
+    const observer = new ResizeObserver(updateOverflow);
+    observer.observe(selector);
+    window.addEventListener('resize', updateOverflow);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateOverflow);
+    };
+  }, []);
 
   const currentProject = projectsData.find((p) => p.id === activeProjectId) || projectsData[0];
   if (!currentProject) return null;
@@ -67,7 +84,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
         </div>
 
         {/* Project Selector Tabs */}
-        <div className="-mx-4 flex snap-x items-center justify-start overflow-x-auto px-4 pb-4 mb-7 sm:mx-0 sm:justify-center sm:px-0 sm:mb-10 gap-2.5 sm:gap-3 scrollbar-none">
+        <div ref={selectorRef} className="-mx-4 flex snap-x items-center justify-start overflow-x-auto px-4 pb-4 gap-2.5 sm:mx-0 sm:justify-center sm:px-0 sm:gap-3 scrollbar-none">
           {projectsData.map((project) => {
             const isSelected = project.id === activeProjectId;
             return (
@@ -90,6 +107,13 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
               </button>
             );
           })}
+        </div>
+        <div className="mb-7 min-h-4 sm:mb-10 sm:min-h-0">
+          {selectorOverflows && (
+            <p className="text-center text-[11px] font-medium text-[#7A695B] sm:hidden" aria-label="Faites glisser horizontalement pour voir les autres projets">
+              ← Glisser pour voir plus →
+            </p>
+          )}
         </div>
 
         {/* Featured Project Showcase Container */}
@@ -158,9 +182,6 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
                     <span className="w-3 h-3 rounded-full bg-[#FFBD2E] inline-block" />
                     <span className="w-3 h-3 rounded-full bg-[#27C93F] inline-block" />
                   </div>
-                  <span className="flex min-w-0 items-center gap-1.5 text-xs font-semibold text-[#4A3F35]">
-                    <span className="truncate">{currentScreenshot.title}</span>
-                  </span>
                 </div>
 
                 {/* Switcher for Views */}
@@ -200,7 +221,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
                 {!imgErrors[currentScreenshot.id] ? (
                   <img
                     key={currentScreenshot.id}
-                    src={`/${encodeURIComponent(currentScreenshot.imageFileName)}`}
+                    src={currentScreenshot.imageUrl}
                     alt={currentScreenshot.title}
                     referrerPolicy="no-referrer"
                     className="w-full max-h-[520px] object-contain rounded-lg shadow-2xl transition-all duration-300 group-hover:brightness-[1.03] cursor-pointer"
@@ -445,7 +466,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
               {!imgErrors[zoomedScreenshot.screenshot.id] ? (
                 <img
                   key={zoomedScreenshot.screenshot.id}
-                  src={`/${encodeURIComponent(zoomedScreenshot.screenshot.imageFileName)}`}
+                  src={zoomedScreenshot.screenshot.imageUrl}
                   alt={zoomedScreenshot.screenshot.title}
                   referrerPolicy="no-referrer"
                   className="w-full max-h-[72vh] object-contain rounded-xl shadow-2xl"

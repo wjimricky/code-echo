@@ -155,8 +155,8 @@ export const BentoGrid: React.FC<BentoGridProps> = ({ onOpenBooking }) => {
                       </p>
                     </div>
                   </div>
-                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#FAF4EB] text-[#8F6544] border border-[#E8DFC8] shrink-0">
-                    Formule 1
+                  <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#111111] text-white border border-[#111111] shrink-0">
+                    Essentiel
                   </span>
                 </div>
 
@@ -249,8 +249,8 @@ export const BentoGrid: React.FC<BentoGridProps> = ({ onOpenBooking }) => {
                       </p>
                     </div>
                   </div>
-                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#FAF4EB] text-[#8F6544] border border-[#E8DFC8] shrink-0">
-                    Formule 2
+                  <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#111111] text-white border border-[#111111] shrink-0">
+                    Premium
                   </span>
                 </div>
 

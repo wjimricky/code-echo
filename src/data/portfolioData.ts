@@ -1,4 +1,14 @@
 import { Project, BeforeAfter, ProcessStep } from '../portfolio-types';
+import suiviClientVue1 from '../assets/projects/suivi-client-vue-1.png.asset.json';
+import suiviClientVue2 from '../assets/projects/suivi-client-vue-2.png.asset.json';
+import suiviClientVue3 from '../assets/projects/suivi-client-vue-3.png.asset.json';
+import suiviTachesVue1 from '../assets/projects/suivi-taches-vue-1.png.asset.json';
+import suiviTachesVue2 from '../assets/projects/suivi-taches-vue-2.png.asset.json';
+import suiviTachesVue3 from '../assets/projects/suivi-taches-vue-3.jpg.asset.json';
+import boiteMailVue1 from '../assets/projects/boite-mail-vue-1.jpg.asset.json';
+import exempleEmailVue2 from '../assets/projects/exemple-email-vue-2.png.asset.json';
+import suiviPaiementVue1 from '../assets/projects/suivi-paiement-vue-1.png.asset.json';
+import suiviPaiementVue2 from '../assets/projects/suivi-paiement-vue-2.png.asset.json';
 
 export const portfolioProfile = {
   name: "Candya Randriamanarina",
@@ -25,7 +35,7 @@ export const portfolioProfile = {
   },
   links: {
     linkedin: "https://www.linkedin.com/in/candya-randriamanarina-5439a2285",
-    calendly: "https://calendly.com/rancandya/appel-decouverte-candya?month=2026-09",
+    calendly: "https://calendly.com/rancandya/appel-decouverte-candya",
     email: "rancandya@gmail.com",
   },
   schedule: {
@@ -72,16 +82,9 @@ export const servicePlans: ServicePlan[] = [
     shortDescription: "Prise en charge intégrale de votre back-office administratif et de toute la relation élève.",
     recommendedFor: "Entrepreneurs qui veulent se concentrer uniquement sur créer et vendre"
   },
-  {
-    id: "diagnostic",
-    name: "Diagnostic Personnalisé (20 min offertes)",
-    badge: "Offert & Sans engagement",
-    shortDescription: "Échange libre de 20 minutes pour cartographier vos blocages et identifier vos priorités.",
-    recommendedFor: "Tous ceux qui hésitent ou ont un besoin hybride"
-  }
 ];
 
-export const CALENDLY_BASE_URL = "https://calendly.com/rancandya/appel-decouverte-candya?month=2026-09";
+export const CALENDLY_BASE_URL = "https://calendly.com/rancandya/appel-decouverte-candya";
 
 export function getCalendlyUrl(
   plan?: string,
@@ -89,7 +92,6 @@ export function getCalendlyUrl(
 ): string {
   const base = "https://calendly.com/rancandya/appel-decouverte-candya";
   const params = new URLSearchParams();
-  params.set('month', '2026-09');
   if (plan) {
     params.set('utm_campaign', 'portfolio_booking');
     params.set('utm_content', plan);
@@ -218,21 +220,21 @@ export const projectsData: Project[] = [
         title: "Vue 1 — Pipeline HubSpot & Cycle d'accompagnement",
         subtitle: "Colonnes : Prospection, Premier Contact, Qualification, Proposition, Gagné",
         type: "hubspot",
-        imageFileName: "Suivi client vue 1.jpg"
+        imageUrl: suiviClientVue1.url
       },
       {
         id: "sc-2",
         title: "Vue 2 — Fiche contact détaillée & Synthèse client",
         subtitle: "Historique complet, propositions envoyées et prochaines étapes identifiées",
         type: "hubspot",
-        imageFileName: "Suivi Client vue 2.jpg"
+        imageUrl: suiviClientVue2.url
       },
       {
         id: "sc-3",
         title: "Vue 3 — Planification des tâches & Relances prospects",
         subtitle: "Filtres d'échéances et préparation des signatures d'accompagnement",
         type: "hubspot",
-        imageFileName: "Suivi client vue 3.jpg"
+        imageUrl: suiviClientVue3.url
       }
     ]
   },
@@ -254,14 +256,21 @@ export const projectsData: Project[] = [
         title: "Vue 1 — Notion Table & Gestion des priorités",
         subtitle: "Suivi exhaustif avec indicateurs visuels, responsables et deadlines précises",
         type: "notion",
-        imageFileName: "Suivi tâches vue 1.jpg"
+        imageUrl: suiviTachesVue1.url
       },
       {
         id: "st-2",
         title: "Vue 2 — Notion Kanban dynamique par statut",
         subtitle: "Colonnes 'À faire', 'En cours', 'Terminé' avec déplacement fluide",
         type: "notion",
-        imageFileName: "Suivi tâches vue 2.jpg"
+        imageUrl: suiviTachesVue2.url
+      },
+      {
+        id: "st-3",
+        title: "Vue 3 — Liste des espaces & livrables",
+        subtitle: "Vue structurée des espaces de travail et des livrables à coordonner",
+        type: "notion",
+        imageUrl: suiviTachesVue3.url
       }
     ]
   },
@@ -288,21 +297,14 @@ export const projectsData: Project[] = [
         title: "Vue 1 — Organisation Gmail & Tri rigoureux par libellés",
         subtitle: "Boîte de réception structurée sans aucun message en souffrance (SAV, Pré-Ventes)",
         type: "email",
-        imageFileName: "Boite mail vue 1.jpg"
+        imageUrl: boiteMailVue1.url
       },
       {
         id: "es-2",
         title: "Vue 2 — Exemple d'email type rédigé (remboursement)",
         subtitle: "Réponse empathique, claire et rassurante envoyée en moins de 24h",
         type: "email",
-        imageFileName: "Exemple email vue 2.jpg"
-      },
-      {
-        id: "es-3",
-        title: "Vue 3 — Exemple d'email type rédigé (reprise & accès formation)",
-        subtitle: "Message déculpabilisant confirmant la validité permanente des accès",
-        type: "email",
-        imageFileName: "Exemple email vue 3.jpg"
+        imageUrl: exempleEmailVue2.url
       }
     ]
   },
@@ -324,14 +326,14 @@ export const projectsData: Project[] = [
         title: "Vue 1 — Suivi des paiements Google Sheets & Échéancier",
         subtitle: "Rapprochement par produit, montants, statut (Payé, Échoué, En attente) et échéances",
         type: "sheets",
-        imageFileName: "Suivi paiement vue 1.jpg"
+        imageUrl: suiviPaiementVue1.url
       },
       {
         id: "sp-2",
         title: "Vue 2 — Base Notion Suivi mensuel & Statuts des relances",
         subtitle: "Fiches clients, ventilation des mensualités, identification des échecs et historique des relances",
         type: "notion",
-        imageFileName: "Suivi paiement vue 2.jpg"
+        imageUrl: suiviPaiementVue2.url
       }
     ]
   }
