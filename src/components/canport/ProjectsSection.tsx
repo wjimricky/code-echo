@@ -108,12 +108,13 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenBooking 
             );
           })}
         </div>
-        {selectorOverflows && (
-          <p className="mb-7 text-center text-[11px] font-medium text-[#7A695B] sm:hidden" aria-label="Faites glisser horizontalement pour voir les autres projets">
-            ← Glisser pour voir plus →
-          </p>
-        )}
-        {!selectorOverflows && <div className="mb-7 sm:mb-10" />}
+        <div className="mb-7 min-h-4 sm:mb-10 sm:min-h-0">
+          {selectorOverflows && (
+            <p className="text-center text-[11px] font-medium text-[#7A695B] sm:hidden" aria-label="Faites glisser horizontalement pour voir les autres projets">
+              ← Glisser pour voir plus →
+            </p>
+          )}
+        </div>
 
         {/* Featured Project Showcase Container */}
         <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#E7E0D5] shadow-lg shadow-[#2D241E]/5 overflow-hidden transition-all">

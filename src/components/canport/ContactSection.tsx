@@ -413,7 +413,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onOpenBooking })
                   <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
                     <button
                       type="submit"
-                      className="w-full sm:flex-1 py-3.5 px-6 rounded-full bg-[#2D241E] hover:bg-[#3E3228] active:scale-95 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm hover:shadow-lg transition-all cursor-pointer"
+                      disabled={isRedirecting}
+                      aria-busy={isRedirecting}
+                      className="w-full sm:flex-1 py-3.5 px-6 rounded-full bg-[#2D241E] hover:bg-[#3E3228] active:scale-95 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm hover:shadow-lg transition-all cursor-pointer disabled:cursor-wait disabled:opacity-70"
                     >
                        <span>{isRedirecting ? 'Ouverture de Calendly…' : 'Envoyer et continuer sur Calendly'}</span>
                       <Send className="w-3.5 h-3.5 text-[#E0A97E]" />
