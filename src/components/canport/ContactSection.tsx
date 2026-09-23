@@ -13,6 +13,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onOpenBooking })
   const [submitted, setSubmitted] = useState(false);
   const [submittedHtml, setSubmittedHtml] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -26,9 +27,21 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onOpenBooking })
       setErrorMessage('Veuillez renseigner votre message dans l’éditeur avant d’envoyer.');
       return;
     }
+    if (isRedirecting) return;
     setErrorMessage('');
-    setSubmittedHtml(formData.needs);
-    setSubmitted(true);
+    setIsRedirecting(true);
+    const plainMessage = formData.needs
+      .replace(/<br\s*\/?\s*>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .trim();
+    const note = [formData.role.trim(), plainMessage].filter(Boolean).join(' — ');
+    window.location.assign(getCalendlyUrl(selectedPlan, {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      note,
+    }));
   };
 
   const handleReset = () => {
@@ -402,7 +415,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onOpenBooking })
                       type="submit"
                       className="w-full sm:flex-1 py-3.5 px-6 rounded-full bg-[#2D241E] hover:bg-[#3E3228] active:scale-95 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm hover:shadow-lg transition-all cursor-pointer"
                     >
-                      <span>Transmettre ma demande avec le plan choisi</span>
+                       <span>{isRedirecting ? 'Ouverture de Calendly…' : 'Envoyer et continuer sur Calendly'}</span>
                       <Send className="w-3.5 h-3.5 text-[#E0A97E]" />
                     </button>
                     <a

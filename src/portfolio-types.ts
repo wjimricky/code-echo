@@ -3,7 +3,7 @@ export interface Screenshot {
   title: string;
   subtitle: string;
   type: string;
-  imageFileName: string;
+  imageUrl: string;
 }
 
 export interface EmailTemplate {

@@ -78,7 +78,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({ onOpenBooking })
         >
           <button
             type="button"
-            onClick={() => onOpenBooking?.('Diagnostic Personnalisé (20 min offertes)')}
+            onClick={() => onOpenBooking?.()}
             className="inline-flex w-full sm:w-auto items-center justify-center gap-2.5 px-5 sm:px-8 py-3.5 rounded-2xl sm:rounded-full text-sm font-bold text-[#FDFBF7] bg-[#2D241E] hover:bg-[#3E3228] active:scale-95 shadow-md hover:shadow-xl transition-all cursor-pointer group"
           >
             <Calendar className="w-4 h-4 text-[#E0A97E] group-hover:rotate-12 transition-transform duration-300" />

@@ -38,7 +38,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onOp
           <button
             id="floating-action-button"
             type="button"
-            onClick={() => onOpenBooking('Diagnostic Personnalisé (20 min offertes)')}
+            onClick={() => onOpenBooking()}
             className="group relative flex min-h-12 items-center gap-2 px-3.5 py-2.5 sm:gap-3 sm:px-5 sm:py-3 rounded-full bg-[#2D241E] hover:bg-[#3E3228] text-[#FDFBF7] shadow-[0_8px_24px_rgba(45,36,30,0.22)] border border-[#E0A97E]/30 transition-all hover:scale-105 active:scale-95 cursor-pointer"
             aria-label="Réserver un appel découverte de 20 minutes offert"
           >
