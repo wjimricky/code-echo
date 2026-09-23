@@ -6,8 +6,8 @@
 - [x] Retirer le nom en haut des aperçus et ajouter l’indication mobile de glissement.
 - [x] Préremplir Calendly depuis les deux formulaires et empêcher les doubles validations.
 - [x] Vérifier l’affichage mobile et ordinateur.
-- [ ] Ajouter la troisième vue email fournie.
-- [ ] Mettre la navigation des projets et des photos en boucle.
-- [ ] Moderniser l’aperçu, le plein écran et les indicateurs de chargement.
-- [ ] Remplacer l’animation d’ouverture et optimiser la vitesse perçue.
+- [x] Ajouter la troisième vue email fournie.
+- [x] Mettre la navigation des projets et des photos en boucle.
+- [x] Moderniser l’aperçu, le plein écran et les indicateurs de chargement.
+- [x] Remplacer l’animation d’ouverture et optimiser la vitesse perçue.
 - [ ] Vérifier les nouveaux comportements sur mobile et ordinateur.
