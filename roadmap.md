@@ -10,4 +10,4 @@
 - [x] Mettre la navigation des projets et des photos en boucle.
 - [x] Moderniser l’aperçu, le plein écran et les indicateurs de chargement.
 - [x] Remplacer l’animation d’ouverture et optimiser la vitesse perçue.
-- [ ] Vérifier les nouveaux comportements sur mobile et ordinateur.
+- [x] Vérifier les nouveaux comportements sur mobile et ordinateur.
