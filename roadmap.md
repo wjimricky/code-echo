@@ -11,3 +11,5 @@
 - [x] Moderniser l’aperçu, le plein écran et les indicateurs de chargement.
 - [x] Remplacer l’animation d’ouverture et optimiser la vitesse perçue.
 - [x] Vérifier les nouveaux comportements sur mobile et ordinateur.
+- [ ] Aligner la navigation desktop, dynamiser les dates et simplifier les contrôles projets sur mobile.
+- [ ] Vérifier ces ajustements sur mobile et ordinateur.

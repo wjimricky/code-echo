@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Calendar, CheckCircle2, Clock, ShieldCheck, ArrowRight, User, Mail, MessageSquare, ExternalLink, Sparkles } from 'lucide-react';
 import { portfolioProfile, servicePlans, getCalendlyUrl } from '../data/portfolioData';
@@ -10,37 +10,57 @@ interface BookingModalProps {
   initialPlan?: string;
 }
 
-const DEFAULT_SCHEDULE_OPTION = {
+const SCHEDULE_TEMPLATES = [
+  {
     dayKey: 'mardi',
-    label: 'Mardi',
-    date: 'Mardi 22 Sept.',
+    weekday: 2,
     hours: '08:00 - 12:00',
     slots: ['08:30 - 08:50', '09:30 - 09:50', '10:30 - 10:50', '11:15 - 11:35'],
-};
-
-const SCHEDULE_OPTIONS = [
-  DEFAULT_SCHEDULE_OPTION,
+  },
   {
     dayKey: 'mercredi',
-    label: 'Mercredi',
-    date: 'Mercredi 23 Sept.',
+    weekday: 3,
     hours: '09:00 - 15:00',
     slots: ['09:30 - 09:50', '11:00 - 11:20', '13:00 - 13:20', '14:15 - 14:35'],
   },
   {
     dayKey: 'jeudi',
-    label: 'Jeudi',
-    date: 'Jeudi 24 Sept.',
+    weekday: 4,
     hours: '09:00 - 12:00',
     slots: ['09:15 - 09:35', '10:15 - 10:35', '11:00 - 11:20', '11:35 - 11:55'],
   },
 ];
 
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+
+const getScheduleOptions = (today: Date) => SCHEDULE_TEMPLATES
+  .map((template) => {
+    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const offset = (template.weekday - date.getDay() + 7) % 7;
+    date.setDate(date.getDate() + offset);
+    const label = capitalize(new Intl.DateTimeFormat('fr-FR', { weekday: 'long' }).format(date));
+    const formattedDate = new Intl.DateTimeFormat('fr-FR', {
+      day: 'numeric',
+      month: 'short',
+    }).format(date);
+
+    return {
+      ...template,
+      label,
+      date: `${label} ${formattedDate}`,
+      sortTime: date.getTime(),
+    };
+  })
+  .sort((a, b) => a.sortTime - b.sortTime);
+
 export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, initialPlan }) => {
   useScrollLock(isOpen);
+  const [todayKey, setTodayKey] = useState(() => new Date().toDateString());
+  const scheduleOptions = useMemo(() => getScheduleOptions(new Date()), [todayKey]);
+  const defaultScheduleOption = scheduleOptions[0];
   const [selectedPlan, setSelectedPlan] = useState<string>(initialPlan || 'Organisation Administrative');
   const [selectedDay, setSelectedDay] = useState(0);
-  const [selectedSlot, setSelectedSlot] = useState(DEFAULT_SCHEDULE_OPTION.slots[1] ?? DEFAULT_SCHEDULE_OPTION.slots[0] ?? '');
+  const [selectedSlot, setSelectedSlot] = useState('');
   const [step, setStep] = useState<'slot' | 'info' | 'success'>('slot');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -53,13 +73,21 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
     }
   }, [initialPlan]);
 
-  const currentDayConfig = SCHEDULE_OPTIONS[selectedDay] ?? DEFAULT_SCHEDULE_OPTION;
+  useEffect(() => {
+    const refreshDate = () => setTodayKey(new Date().toDateString());
+    const timer = window.setInterval(refreshDate, 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const currentDayConfig = scheduleOptions[selectedDay] ?? defaultScheduleOption;
 
   useEffect(() => {
     if (currentDayConfig && !currentDayConfig.slots.includes(selectedSlot)) {
       setSelectedSlot(currentDayConfig.slots[0] ?? '');
     }
   }, [selectedDay, currentDayConfig]);
+
+  if (!currentDayConfig || !defaultScheduleOption) return null;
 
   const handleConfirmBooking = (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,14 +201,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
                 <div className="mt-4">
                   <div className="grid grid-cols-1 gap-2 sm:flex sm:items-center sm:justify-between mb-2">
                     <label className="text-xs font-bold text-[#473B30] uppercase tracking-wider block">
-                      2. Choisissez le jour (Mar, Mer, Jeu)
+                      2. Choisissez le jour
                     </label>
                     <span className="w-fit text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                       East Africa Time
                     </span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    {SCHEDULE_OPTIONS.map((day, idx) => (
+                    {scheduleOptions.map((day, idx) => (
                       <button
                         key={day.dayKey}
                         type="button"
@@ -277,7 +305,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-bold text-[#2D241E]">🎯 {selectedPlan}</span>
                     <span className="text-[#C2B29F]">•</span>
-                    <span>📅 {SCHEDULE_OPTIONS[selectedDay]?.date ?? DEFAULT_SCHEDULE_OPTION.date}</span>
+                    <span>📅 {currentDayConfig.date}</span>
                     <span className="text-[#C2B29F]">•</span>
                     <span>⏰ {selectedSlot}</span>
                   </div>
@@ -388,7 +416,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
                 </h3>
                 <p className="text-xs sm:text-sm text-[#635345] max-w-md mx-auto leading-relaxed">
                   Merci {name || 'cher client'} ! Votre appel de découverte est programmé pour le{' '}
-                  <strong className="text-[#2D241E]">{SCHEDULE_OPTIONS[selectedDay]?.date ?? DEFAULT_SCHEDULE_OPTION.date}</strong> à{' '}
+                   <strong className="text-[#2D241E]">{currentDayConfig.date}</strong> à{' '}
                   <strong className="text-[#2D241E]">{selectedSlot}</strong>.
                 </p>
                 <div className="p-4 rounded-2xl bg-white border border-[#E7DFD5] text-xs text-[#5C4D3E] max-w-sm mx-auto text-left space-y-1.5 shadow-2xs">
